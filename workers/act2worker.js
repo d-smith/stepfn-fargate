@@ -3,12 +3,17 @@ var bs = require('./babysteps.js');
 const workerName = 'acttwo-worker-' + bs.makeid();
 
 const worker2activityFn = async (input) => {
-    return {
-        a: {
-            foo: true,
-            bar: false
-        }
+    let processData = input;
+    if(typeof processData == 'string') {
+        processData = JSON.parse(processData);
+    }
+
+    processData['stepB'] ={
+        foo: true,
+        bar: false
     };
+
+    return processData;
 }
 
 const workTasks = async () => {
