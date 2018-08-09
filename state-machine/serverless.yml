@@ -1,0 +1,31 @@
+service: sm1
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  runtime: nodejs8.10
+
+stepFunctions:
+  stateMachines:
+    Process1:
+      name: sm1-${opt:stage}
+      definition:
+        Comment: "Two steps FTW!"
+        StartAt: step-1
+        States:
+          step-1:
+            Type: Task
+            Resource: arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:activity:actone-${self:service}-${opt:stage}
+            Next: step-2
+          step-2:
+            Type: Task
+            Resource: arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:activity:acttwo-${self:service}-${opt:stage}
+            End: true
+  activities:
+    - actone-${self:service}-${opt:stage}
+    - acttwo-${self:service}-${opt:stage}
+
+
+plugins:
+  - serverless-step-functions
+  - serverless-pseudo-parameters
