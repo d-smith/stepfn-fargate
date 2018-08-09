@@ -9,16 +9,22 @@ stepFunctions:
   stateMachines:
     Process1:
       name: sm1-${opt:stage}
+      events:
+        - http:
+            path: create
+            method: POST
       definition:
         Comment: "Two steps FTW!"
         StartAt: step-1
         States:
           step-1:
             Type: Task
+            TimeoutSeconds: 30
             Resource: arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:activity:actone-${self:service}-${opt:stage}
             Next: step-2
           step-2:
             Type: Task
+            TimeoutSeconds: 30
             Resource: arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:activity:acttwo-${self:service}-${opt:stage}
             End: true
   activities:
