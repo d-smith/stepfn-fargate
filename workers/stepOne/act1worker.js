@@ -1,4 +1,4 @@
-var bs = require('./babysteps.js');
+var bs = require('babysteps');
   
 const workerName = 'actone-worker-' + bs.makeid();
 
@@ -6,7 +6,6 @@ const worker1activityFn = async (input) => {
     if(typeof input == 'string') {
         input = JSON.parse(input);
     }
-
 
     let processData = {};
     processData['input'] = input;

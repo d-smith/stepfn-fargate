@@ -1,10 +1,10 @@
 {
-  "name": "workers",
+  "name": "steptwo",
   "version": "1.0.0",
   "description": "",
-  "main": "act1worker.js",
+  "main": "act2worker.js",
   "scripts": {
-    "start": "node act1worker.js"
+    "start": "node act2worker.js"
   },
   "author": "",
   "license": "MIT",

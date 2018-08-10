@@ -1,4 +1,4 @@
-var bs = require('./babysteps.js');
+var bs = require('babysteps');
   
 const workerName = 'acttwo-worker-' + bs.makeid();
 

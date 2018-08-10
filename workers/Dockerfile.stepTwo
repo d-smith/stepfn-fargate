@@ -1,0 +1,16 @@
+FROM node:8
+
+WORKDIR /usr/src/babysteps
+COPY babysteps/babysteps.js ./
+COPY babysteps/package*.json ./
+RUN npm install
+
+WORKDIR /usr/src/app
+
+COPY stepTwo/package*.json ./
+
+RUN npm install
+
+COPY stepTwo/act2worker.js .
+
+CMD [ "npm", "start" ]
