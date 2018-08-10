@@ -12,7 +12,7 @@
 ```console
 aws s3 cp . s3://code97068/fg/ --exclude "*" --include "*.yml" --recursive
 aws cloudformation create-stack \
---stack-name sffg \
+--stack-name far-step \
 --template-body file://fgstack.yml \
 --parameters ParameterKey=BucketRoot,ParameterValue=https://s3.amazonaws.com/code97068/fg \
 --capabilities CAPABILITY_IAM
