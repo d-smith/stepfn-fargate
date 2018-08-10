@@ -128,7 +128,7 @@ Resources:
         Ref: TaskExecutionRole
       TaskRoleArn: 
         Ref: TaskRole
-      Family: "fargate-sm1"
+      Family: "sm1-stepone"
       Cpu: 256
       Memory: 512
       
@@ -147,3 +147,49 @@ Resources:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
       TaskDefinition: !Ref 'StepOneWorkerTask'
+
+  StepTwoWorkerTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        -
+          Name: stepTwoWorker
+          Image: !Join [ '', [Ref: 'AWS::AccountId', '.dkr.ecr.us-east-1.amazonaws.com/stepz/sm1-step2-worker' ]]
+          Memory: 512
+          Cpu: 256
+          Essential: True
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref 'CloudwatchLogsGroup'
+              awslogs-region: !Ref 'AWS::Region'
+              awslogs-stream-prefix: sm1StepTwo
+          Environment:
+            - Name: 'ACTTWO_ARN'
+              Value: !Join ['', ['arn:aws:states:', Ref: 'AWS::Region',':', Ref: 'AWS::AccountId', ':activity:acttwo-sm1-dev']]
+      NetworkMode: awsvpc
+      ExecutionRoleArn: 
+        Ref: TaskExecutionRole
+      TaskRoleArn: 
+        Ref: TaskRole
+      Family: "sm1-steptwo"
+      Cpu: 256
+      Memory: 512
+      
+  StepTwoWorkerService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref FGCluster
+      DesiredCount: '1'
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+          - Ref: SecurityGroup
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+      TaskDefinition: !Ref 'StepTwoWorkerTask'
