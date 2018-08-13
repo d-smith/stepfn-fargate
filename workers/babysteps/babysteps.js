@@ -1,4 +1,9 @@
 const AWS = require('aws-sdk');
+var proxy = require('proxy-agent');    
+AWS.config.update({
+    httpOptions: { agent: proxy(process.env.HTTPS_PROXY) }
+});
+
 var stepfunctions = new AWS.StepFunctions();
 
 const hasData = (o) => {
