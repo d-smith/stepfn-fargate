@@ -29,6 +29,11 @@ stepFunctions:
             Type: Task
             TimeoutSeconds: 30
             Resource: arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:activity:actone-${self:service}-${opt:stage}
+            Next: manual
+          manual:
+            Type: Task
+            TimeoutSeconds: 30
+            Resource: arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:activity:manual-${self:service}-${opt:stage}
             Next: step-2
           step-2:
             Type: Task
@@ -38,6 +43,7 @@ stepFunctions:
   activities:
     - actone-${self:service}-${opt:stage}
     - acttwo-${self:service}-${opt:stage}
+    - manual-${self:service}-${opt:stage}
 
 
 plugins:

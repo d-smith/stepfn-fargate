@@ -65,34 +65,57 @@ Resources:
                   "properties": {
                     "metrics":[[
                       "AWS/States",
+                      "ExecutionsFailed",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ]],
+                    "title":"Executions Failed",
+                    "region":"${region}",
+                    "stat":"Sum"
+                  }
+                },
+                {
+                  "type":"metric",
+                  "properties": {
+                    "metrics":[[
+                      "AWS/States",
                       "ExecutionsAborted",
                       "StateMachineArn",
                       "${stateMachine}"
-                    ],[
-                    
+                    ]],
+                    "title":"Executions Aborted",
+                    "region":"${region}",
+                    "stat":"Sum"
+                  }
+                },
+                {
+                  "type":"metric",
+                  "properties": {
+                    "metrics":[[
                       "AWS/States",
-                      "ExecutionFailed",
+                      "ExecutionsTimedOut",
                       "StateMachineArn",
                       "${stateMachine}"
-                    ],[
-                    
-                      "AWS/States",
-                      "ExecutionsTimedout",
-                      "StateMachineArn",
-                      "${stateMachine}"
-                    ],[
-                    
+                    ]],
+                    "title":"Executions Timed Out",
+                    "region":"${region}",
+                    "stat":"Sum"
+                  }
+                },
+                {
+                  "type":"metric",
+                  "properties": {
+                    "metrics":[[
                       "AWS/States",
                       "ExecutionThrottled",
                       "StateMachineArn",
                       "${stateMachine}"
-                    ]
-                    ],
-                    "title":"Execution Problems",
+                    ]],
+                    "title":"Executions Throttled",
                     "region":"${region}",
                     "stat":"Sum"
                   }
-                }
+                }       
               ]
             }
           - { account: !Ref "AWS::AccountId", region: !Ref "AWS::Region", stateMachine: !Ref "StateMachineArn" }
