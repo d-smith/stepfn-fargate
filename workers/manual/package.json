@@ -1,0 +1,11 @@
+{
+  "name": "manual",
+  "version": "1.0.0",
+  "description": "",
+  "main": "happy.js",
+  "author": "",
+  "license": "IT",
+  "dependencies": {
+    "babysteps": "file:../babysteps"
+  }
+}
