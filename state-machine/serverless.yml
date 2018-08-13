@@ -4,6 +4,13 @@ provider:
   name: aws
   stage: ${opt:stage, 'dev'}
   runtime: nodejs8.10
+  apiKeys:
+    - sfs3embedded-${opt:stage, self:provider.stage}
+  usagePlan:
+    throttle:
+      burstLimit: 10
+      rateLimit: 5
+
 
 stepFunctions:
   stateMachines:
@@ -13,6 +20,7 @@ stepFunctions:
         - http:
             path: create
             method: POST
+            private: true
       definition:
         Comment: "Two steps FTW!"
         StartAt: step-1

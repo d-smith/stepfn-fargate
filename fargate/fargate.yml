@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  Create a fargate cluster, nginx tasks, and ecs server that runs containers
-  assigned private ip addresses in private subnets, load balanced.
+  Create a fargate cluster, step function tasks and service that runs containers
+  assigned private ip addresses in private subnets.
 
 Parameters:
   PrivateSubnet1:
@@ -102,7 +102,7 @@ Resources:
       LogGroupName: !Join ['-', [ECSLogGroup, !Ref 'AWS::StackName']]
       RetentionInDays: 14
 
-  StepOneWorkerTask:
+  WorkerTasks:
     Type: AWS::ECS::TaskDefinition
     Properties:
       RequiresCompatibilities:
@@ -111,8 +111,6 @@ Resources:
         -
           Name: stepOneWorker
           Image: !Join [ '', [Ref: 'AWS::AccountId', '.dkr.ecr.us-east-1.amazonaws.com/stepz/sm1-step1-worker' ]]
-          Memory: 512
-          Cpu: 256
           Essential: True
           LogConfiguration:
             LogDriver: awslogs
@@ -123,42 +121,9 @@ Resources:
           Environment:
             - Name: 'ACTONE_ARN'
               Value: !Join ['', ['arn:aws:states:', Ref: 'AWS::Region',':', Ref: 'AWS::AccountId', ':activity:actone-sm1-dev']]
-      NetworkMode: awsvpc
-      ExecutionRoleArn: 
-        Ref: TaskExecutionRole
-      TaskRoleArn: 
-        Ref: TaskRole
-      Family: "sm1-stepone"
-      Cpu: 256
-      Memory: 512
-      
-  StepOneWorkerService:
-    Type: AWS::ECS::Service
-    Properties:
-      Cluster: !Ref FGCluster
-      DesiredCount: '1'
-      LaunchType: FARGATE
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-          - Ref: SecurityGroup
-          Subnets:
-            - !Ref PrivateSubnet1
-            - !Ref PrivateSubnet2
-      TaskDefinition: !Ref 'StepOneWorkerTask'
-
-  StepTwoWorkerTask:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      RequiresCompatibilities:
-        - FARGATE
-      ContainerDefinitions:
         -
           Name: stepTwoWorker
           Image: !Join [ '', [Ref: 'AWS::AccountId', '.dkr.ecr.us-east-1.amazonaws.com/stepz/sm1-step2-worker' ]]
-          Memory: 512
-          Cpu: 256
           Essential: True
           LogConfiguration:
             LogDriver: awslogs
@@ -174,11 +139,11 @@ Resources:
         Ref: TaskExecutionRole
       TaskRoleArn: 
         Ref: TaskRole
-      Family: "sm1-steptwo"
+      Family: "sm1-stepone"
       Cpu: 256
       Memory: 512
       
-  StepTwoWorkerService:
+  WorkService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref FGCluster
@@ -186,10 +151,11 @@ Resources:
       LaunchType: FARGATE
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
+          AssignPublicIp: ENABLED
           SecurityGroups:
           - Ref: SecurityGroup
           Subnets:
             - !Ref PrivateSubnet1
             - !Ref PrivateSubnet2
-      TaskDefinition: !Ref 'StepTwoWorkerTask'
+      TaskDefinition: !Ref 'WorkerTasks'
+

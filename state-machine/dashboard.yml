@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Template to create a monitoring dashboard for my step functions
+
+Parameters:
+  DashboardName:
+    Type: String
+    AllowedPattern: "^[a-zA-z0-9-_]*$"
+  StateMachineArn:
+    Type: String
+Resources:
+  MyDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Ref DashboardName
+      DashboardBody:
+        !Sub
+          - |-
+            {
+              "widgets":[
+                {
+                  "type":"metric",
+                  "properties": {
+                    "metrics":[[
+                      "AWS/States",
+                      "ExecutionsStarted",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ]],
+                    "title":"Executions Started",
+                    "region":"${region}",
+                    "stat":"Sum"
+                  }
+                },
+                {
+                  "type":"metric",
+                  "properties": {
+                    "metrics":[[
+                      "AWS/States",
+                      "ExecutionsSucceeded",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ]],
+                    "title":"Executions Succeeded",
+                    "region":"${region}",
+                    "stat":"Sum"
+                  }
+                },
+                {
+                  "type":"metric",
+                  "properties": {
+                    "metrics":[[
+                      "AWS/States",
+                      "ExecutionTime",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ]],
+                    "title":"Execution Time",
+                    "region":"${region}",
+                    "stat":"Average"
+                  }
+                },
+                {
+                  "type":"metric",
+                  "properties": {
+                    "metrics":[[
+                      "AWS/States",
+                      "ExecutionsAborted",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ],[
+                    
+                      "AWS/States",
+                      "ExecutionFailed",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ],[
+                    
+                      "AWS/States",
+                      "ExecutionsTimedout",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ],[
+                    
+                      "AWS/States",
+                      "ExecutionThrottled",
+                      "StateMachineArn",
+                      "${stateMachine}"
+                    ]
+                    ],
+                    "title":"Execution Problems",
+                    "region":"${region}",
+                    "stat":"Sum"
+                  }
+                }
+              ]
+            }
+          - { account: !Ref "AWS::AccountId", region: !Ref "AWS::Region", stateMachine: !Ref "StateMachineArn" }
